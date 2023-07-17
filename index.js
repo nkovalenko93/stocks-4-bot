@@ -7,7 +7,7 @@ const fs = require('fs');
 
 
 const app = express();
-const port = 5001;
+const port = 3000;
 const API_TOKEN = '6344455120:AAFTijJFIW57GX37aSr_SNNBN9QPrEET2Is';
 const bot = new TelegramBot(API_TOKEN, { polling: true });
 
@@ -30,6 +30,7 @@ const getPlnUsdRates = async () => {
   const { data: { rates } } = await axios.get(
     `http://api.nbp.pl/api/exchangerates/rates/c/usd/${startDate.format()}/${endDate.format()}?format=json`,
   );
+  console.log('\n\n\nfetched polish rates', JSON.stringify(rates, null, 2));
   return rates;
 };
 
@@ -41,6 +42,7 @@ const fetchExchangeRatesForLastMonth = async () => {
     const formattedLastMonth = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}-${lastMonth.getDate()}`;
 
     const { data } = await axios.get(`https://www.nbrb.by/api/exrates/rates?ondate=${formattedLastMonth}&periodicity=0`);
+    console.log('\n\n\nfetched belarus rates', JSON.stringify(data, null, 2));
     return data;
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
@@ -230,4 +232,5 @@ app.listen(port, async () => {
   bot.onText(/\/start/, addChannel);
   bot.onText(/\/stop/, removeChannel);
   bot.onText(/\/rate/, sendRatesData);
+  await fetchExchangeRatesForLastMonth();
 });
