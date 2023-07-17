@@ -226,7 +226,7 @@ const sendRatesData = async (msg) => {
 };
 
 app.listen(port, async () => {
-  schedule.scheduleJob({ hour: 22, minute: 57 }, async () => {
+  schedule.scheduleJob({ hour: 13, minute: 30 }, async () => {
     await sendRatesData();
   });
   bot.onText(/\/start/, addChannel);
