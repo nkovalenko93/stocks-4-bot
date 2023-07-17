@@ -28,8 +28,18 @@ Date.prototype.formatByn = function () {
   return `${this.getDate().toString().padStart(2, '0')}.${(this.getMonth() + 1).toString().padStart(2, '0')}.${this.getFullYear()}`;
 };
 
+let BYN_RATES;
 
-const BYN_RATES = {};
+if (fs.existsSync('byn_rates.dat')) {
+  BYN_RATES = JSON.parse(fs.readFileSync('byn_rates.dat').toString());
+}
+
+if (!BYN_RATES) {
+  BYN_RATES = {};
+}
+
+const saveBynRates = () => fs.writeFileSync('groups.dat', JSON.stringify(saveBynRates));
+
 const getBynRates = async () => {
   try {
     const endDate = new Date();
@@ -50,6 +60,7 @@ const getBynRates = async () => {
       }
       startDate.setDate(startDate.getDate() + 1);
     }
+    saveBynRates();
     return bynRates;
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
@@ -65,20 +76,6 @@ const getPlnUsdRates = async () => {
     `http://api.nbp.pl/api/exchangerates/rates/c/usd/${startDate.formatPln()}/${endDate.formatPln()}?format=json`,
   );
   return rates;
-};
-
-
-const fetchExchangeRatesForLastMonth = async () => {
-  try {
-    const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-    const formattedLastMonth = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}-${lastMonth.getDate()}`;
-    const { data } = await axios.get(`https://www.nbrb.by/api/exrates/rates?ondate=${formattedLastMonth}&periodicity=0`);
-    return data;
-  } catch (error) {
-    console.error('Error fetching exchange rates:', error);
-    throw error;
-  }
 };
 
 const getLineLength = (point1, point2) => {
