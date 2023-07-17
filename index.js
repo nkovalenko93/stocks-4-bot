@@ -41,6 +41,7 @@ const fetchExchangeRatesForLastMonth = async () => {
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
     const formattedLastMonth = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}-${lastMonth.getDate()}`;
 
+    console.log('\n\nfetching byn rates');
     const { data } = await axios.get(`https://www.nbrb.by/api/exrates/rates?ondate=${formattedLastMonth}&periodicity=0`);
     console.log('\n\n\nfetched belarus rates', JSON.stringify(data, null, 2));
     return data;
