@@ -19,8 +19,42 @@ app.post('/webhook', async (req, res) => {
 });
 
 
-Date.prototype.format = function () {
+Date.prototype.formatPln = function () {
   return `${this.getFullYear()}-${(this.getMonth() + 1).toString().padStart(2, '0')}-${this.getDate().toString().padStart(2, '0')}`;
+};
+
+
+Date.prototype.formatByn = function () {
+  return `${this.getDate().toString().padStart(2, '0')}.${(this.getMonth() + 1).toString().padStart(2, '0')}.${this.getFullYear()}`;
+};
+
+
+const BYN_RATES = {};
+const getBynRates = async () => {
+  try {
+    const endDate = new Date();
+    const startDate = new Date();
+    const bynRates = [];
+    startDate.setMonth(startDate.getMonth() - 1);
+    while (!((startDate.getMonth() === endDate.getMonth()) && (startDate.getDate() === endDate.getDate()))) {
+      if (!BYN_RATES[startDate.formatByn()]) {
+        await (new Promise((resolve) => setTimeout(resolve, 2000)));
+        const { data: { rates } } = await axios.get(`https://developerhub.alfabank.by:8273/partner/1.0.1/public/nationalRates?date=${startDate.formatByn()}`);
+        const rate = rates.find((rate) => (rate.iso === 'USD'));
+        if (rate) {
+          BYN_RATES[rate.date] = rate;
+        }
+      }
+      if (BYN_RATES[startDate.formatByn()]) {
+        bynRates.push(BYN_RATES[startDate.formatByn()]);
+      }
+      startDate.setDate(startDate.getDate() + 1);
+    }
+    return bynRates;
+  } catch (error) {
+    console.error('Error fetching exchange rates:', error);
+    throw error;
+  }
 };
 
 const getPlnUsdRates = async () => {
@@ -28,7 +62,7 @@ const getPlnUsdRates = async () => {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 1);
   const { data: { rates } } = await axios.get(
-    `http://api.nbp.pl/api/exchangerates/rates/c/usd/${startDate.format()}/${endDate.format()}?format=json`,
+    `http://api.nbp.pl/api/exchangerates/rates/c/usd/${startDate.formatPln()}/${endDate.formatPln()}?format=json`,
   );
   return rates;
 };
@@ -210,17 +244,17 @@ const getChannels = () => {
 const sendRatesData = async (msg) => {
   const plnRates = await getPlnUsdRates();
   const plnRateDifference = getDifference(plnRates, 'bid', 'USD', 'PLN');
-  // const bynRates = await fetchExchangeRatesForLastMonth();
-  // const bynRateDifference = getDifference(plnRates, 'bid', 'USD', 'BYN');
+  const bynRates = await getBynRates();
+  const bynRateDifference = getDifference(bynRates, 'rate', 'USD', 'BYN');
   await diffToImage(plnRateDifference, 'plnusd');
-  // await diffToImage(bynRateDifference, 'bynusd');
+  await diffToImage(bynRateDifference, 'bynusd');
   const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
   if (!groupIds.length) {
     return false;
   }
   for (const groupId of groupIds) {
     await bot.sendPhoto(groupId, 'plnusd.png');
-    // await bot.sendPhoto(groupId, 'bynusd.png');
+    await bot.sendPhoto(groupId, 'bynusd.png');
   }
   return true;
 };
