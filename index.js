@@ -210,14 +210,17 @@ const getChannels = () => {
 const sendRatesData = async (msg) => {
   const plnRates = await getPlnUsdRates();
   const plnRateDifference = getDifference(plnRates, 'bid', 'USD', 'PLN');
+  // const bynRates = await fetchExchangeRatesForLastMonth();
+  // const bynRateDifference = getDifference(plnRates, 'bid', 'USD', 'BYN');
   await diffToImage(plnRateDifference, 'plnusd');
+  // await diffToImage(bynRateDifference, 'bynusd');
   const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
   if (!groupIds.length) {
     return false;
   }
-  // const bynRates = await fetchExchangeRatesForLastMonth();
   for (const groupId of groupIds) {
     await bot.sendPhoto(groupId, 'plnusd.png');
+    // await bot.sendPhoto(groupId, 'bynusd.png');
   }
   return true;
 };
