@@ -63,7 +63,7 @@ const getBynRates = async () => {
     saveBynRates();
     return bynRates;
   } catch (error) {
-    console.error('Error fetching exchange rates:', error);
+    console.error('Error fetching byn rates:', error);
     throw error;
   }
 };
