@@ -38,7 +38,7 @@ if (!BYN_RATES) {
   BYN_RATES = {};
 }
 
-const saveBynRates = () => fs.writeFileSync('byn_rates.dat', JSON.stringify(saveBynRates));
+const saveBynRates = () => fs.writeFileSync('byn_rates.dat', JSON.stringify(BYN_RATES));
 
 const getBynRates = async () => {
   try {
