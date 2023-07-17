@@ -99,10 +99,10 @@ const getDifference = (rates, fieldName, from, to) => {
   const prev = rates[rates.length - 2][fieldName];
   const current = rates[rates.length - 1][fieldName];
   let percent;
-  if (current < prev) {
-    percent = `, <span style="color: #C43525;">${((1 - (current / prev)) * 100).toFixed(4)}% ↓</span>`;
-  } else if (current > prev) {
-    percent = `, <span style="color: #00a200;">${((1 - (prev / current)) * 100).toFixed(4)}% ↑</span>`;
+  if (current > prev) {
+    percent = `, <span style="color: #C43525;">${((1 - (prev / current)) * 100).toFixed(4)}% ↓</span>`;
+  } else if (current < prev) {
+    percent = `, <span style="color: #00a200;">${((1 - (current / prev)) * 100).toFixed(4)}% ↑</span>`;
   } else {
     percent = '';
   }
