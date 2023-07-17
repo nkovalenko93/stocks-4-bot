@@ -214,8 +214,11 @@ const sendRatesData = async (msg) => {
   // -993331295 test chat
   const plnRates = await getPlnUsdRates();
   const plnRateDifference = getDifference(plnRates, 'bid', 'USD', 'PLN');
+  console.log('plnRateDifference', plnRateDifference);
   await diffToImage(plnRateDifference, 'plnusd');
+  console.log('drawn image');
   const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
+  console.log('group ids', msg);
   if (!groupIds.length) {
     return false;
   }
