@@ -223,10 +223,10 @@ const sendRatesData = async (msg) => {
   if (!groupIds.length) {
     return false;
   }
-  const bynRates = await fetchExchangeRatesForLastMonth();
+  // const bynRates = await fetchExchangeRatesForLastMonth();
   for (const groupId of groupIds) {
-    await bot.sendMessage(groupId, JSON.stringify(plnRates));
-    await bot.sendMessage(groupId, JSON.stringify(bynRates));
+    // await bot.sendMessage(groupId, JSON.stringify(plnRates));
+    // await bot.sendMessage(groupId, JSON.stringify(bynRates));
     await bot.sendPhoto(groupId, 'plnusd.png');
   }
   return true;
