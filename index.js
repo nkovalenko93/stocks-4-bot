@@ -212,16 +212,17 @@ const getChannels = () => {
 
 const sendRatesData = async (msg) => {
   // -993331295 test chat
-  const rates = msg && msg.chat && msg.chat.id && [msg.chat.id] || (await getPlnUsdRates());
+  const rates = await getPlnUsdRates();
   const plnRateDifference = getDifference(rates, 'bid', 'USD', 'PLN');
   await diffToImage(plnRateDifference, 'plnusd');
-  const groupIds = getChannels();
+  const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
   if (!groupIds.length) {
     return false;
   }
   for (const groupId of groupIds) {
     await bot.sendPhoto(groupId, 'plnusd.png');
   }
+  await fetchExchangeRatesForLastMonth();
   return true;
 };
 
@@ -232,5 +233,4 @@ app.listen(port, async () => {
   bot.onText(/\/start/, addChannel);
   bot.onText(/\/stop/, removeChannel);
   bot.onText(/\/rate/, sendRatesData);
-  await fetchExchangeRatesForLastMonth();
 });
