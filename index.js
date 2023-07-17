@@ -260,7 +260,7 @@ app.listen(port, async () => {
   schedule.scheduleJob({ hour: 13, minute: 30 }, async () => {
     await sendRatesData();
   });
-  bot.onText(/\/start/, addChannel);
-  bot.onText(/\/stop/, removeChannel);
+  bot.onText(/\/ratestart/, addChannel);
+  bot.onText(/\/ratestop/, removeChannel);
   bot.onText(/\/rate/, sendRatesData);
 });
