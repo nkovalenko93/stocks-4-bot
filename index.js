@@ -30,7 +30,6 @@ const getPlnUsdRates = async () => {
   const { data: { rates } } = await axios.get(
     `http://api.nbp.pl/api/exchangerates/rates/c/usd/${startDate.format()}/${endDate.format()}?format=json`,
   );
-  console.log('\n\n\nfetched polish rates', JSON.stringify(rates, null, 2));
   return rates;
 };
 
@@ -40,10 +39,7 @@ const fetchExchangeRatesForLastMonth = async () => {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
     const formattedLastMonth = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}-${lastMonth.getDate()}`;
-
-    console.log('\n\nfetching byn rates');
     const { data } = await axios.get(`https://www.nbrb.by/api/exrates/rates?ondate=${formattedLastMonth}&periodicity=0`);
-    console.log('\n\n\nfetched belarus rates', JSON.stringify(data, null, 2));
     return data;
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
@@ -212,21 +208,15 @@ const getChannels = () => {
 
 
 const sendRatesData = async (msg) => {
-  // -993331295 test chat
   const plnRates = await getPlnUsdRates();
   const plnRateDifference = getDifference(plnRates, 'bid', 'USD', 'PLN');
-  console.log('plnRateDifference', plnRateDifference);
   await diffToImage(plnRateDifference, 'plnusd');
-  console.log('drawn image');
   const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
-  console.log('group ids', msg);
   if (!groupIds.length) {
     return false;
   }
   // const bynRates = await fetchExchangeRatesForLastMonth();
   for (const groupId of groupIds) {
-    // await bot.sendMessage(groupId, JSON.stringify(plnRates));
-    // await bot.sendMessage(groupId, JSON.stringify(bynRates));
     await bot.sendPhoto(groupId, 'plnusd.png');
   }
   return true;
