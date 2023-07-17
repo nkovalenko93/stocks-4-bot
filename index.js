@@ -8,7 +8,7 @@ const fs = require('fs');
 
 const app = express();
 const port = 3000;
-const API_TOKEN = '6389376409:AAHupHdIUk9SHI17GZMOeJsClt9kZ3EvvgE';
+const API_TOKEN = '6389376409:AAFlkYC8gRQ_oSLo2e8vdh2PN_OgQZeOW7k';
 const bot = new TelegramBot(API_TOKEN, { polling: true });
 
 app.use(express.json());
