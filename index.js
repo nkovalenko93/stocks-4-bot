@@ -1,5 +1,4 @@
 const express = require('express');
-const schedule = require('node-schedule');
 const axios = require('axios');
 const TelegramBot = require('node-telegram-bot-api');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -8,7 +7,7 @@ const fs = require('fs');
 
 const app = express();
 const port = 3000;
-const API_TOKEN = '6389376409:AAFlkYC8gRQ_oSLo2e8vdh2PN_OgQZeOW7k';
+const API_TOKEN = '6389376409:AAGeyMPAJUI9_-3q185e-hGpf8gGsNzaAxc';
 const bot = new TelegramBot(API_TOKEN, { polling: true });
 
 app.use(express.json());
@@ -245,7 +244,7 @@ const sendRatesData = async (msg) => {
   const bynRateDifference = getDifference(bynRates, 'rate', 'USD', 'BYN');
   await diffToImage(plnRateDifference, 'plnusd');
   await diffToImage(bynRateDifference, 'bynusd');
-  const groupIds = msg && msg.chat && msg.chat.id && [msg.chat.id] || getChannels();
+  const groupIds = msg ? [msg.chat.id] : getChannels();
   if (!groupIds.length) {
     return false;
   }
@@ -256,10 +255,16 @@ const sendRatesData = async (msg) => {
   return true;
 };
 
+let lastDate = null;
 app.listen(port, async () => {
-  schedule.scheduleJob({ hour: 13, minute: 30 }, async () => {
-    await sendRatesData();
-  });
+  setInterval(async () => {
+    const now = new Date();
+    console.log('Current date', now);
+    if ((lastDate !== now.getDate()) && (now.getHours() === 13) && (now.getMinutes() === 30)) {
+      lastDate = now.getDate();
+      await sendRatesData();
+    }
+  }, 5000);
   bot.onText(/\/rstart/, addChannel);
   bot.onText(/\/rstop/, removeChannel);
   bot.onText(/\/rate/, sendRatesData);
