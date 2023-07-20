@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const app = express();
 const port = 3000;
-const API_TOKEN = '6389376409:AAGeyMPAJUI9_-3q185e-hGpf8gGsNzaAxc';
+const API_TOKEN = '6389376409:AAHAqfpnVnxw8WxWbHqxsUh89r9ACmbRuDg';
 const bot = new TelegramBot(API_TOKEN, { polling: true });
 
 app.use(express.json());
@@ -259,8 +259,7 @@ let lastDate = null;
 app.listen(port, async () => {
   setInterval(async () => {
     const now = new Date();
-    console.log('Current date', now);
-    if ((lastDate !== now.getDate()) && (now.getHours() === 13) && (now.getMinutes() === 30)) {
+    if ((lastDate !== now.getDate()) && (now.getHours() === 10) && (now.getMinutes() === 30)) {
       lastDate = now.getDate();
       await sendRatesData();
     }
